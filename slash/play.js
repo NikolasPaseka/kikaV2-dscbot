@@ -1,59 +1,43 @@
-const { SlashCommandBuilder } = require('@discordjs/builders')
-const { MessageEmbed } = require('discord.js')
+//const { SlashCommandBuilder } = require('@discordjs/builders')
+const { EmbedBuilder } = require('discord.js')
 const { QueryType } = require('discord-player')
+
+const ytdl = require('ytdl-core')
 
 const fetch = require('isomorphic-unfetch')
 const { getData, getPreview, getTracks, getDetails } = require('spotify-url-info')(fetch)
 
-async function playResponse(queue, message, embed) {
-    if (!queue.playing) await queue.play()
-    message.channel.send({
-        embeds: [embed]
-    })
-}
+const { generateDependencyReport } = require('@discordjs/voice');
+
+console.log(generateDependencyReport());
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('play')
-        .setDescription('Play songs from youtube or spotify'),
+    name: 'play',
+    description: 'Play songs from youtube or spotify',
+    
     async execute(client, message, args) {
         if (!message.member.voice.channel) {
             return message.channel.send('You need to be in voice channel in order to play song')
         }
 
-        const queue = await client.player.createQueue(message.guildId)
-        if (!queue.connection) await queue.connect(message.member.voice.channel)
-
-        let embed = new MessageEmbed()
-
         if (args[0].startsWith('https://www.youtube.com/watch')) {
             let url = args[0]
-            const result = await client.player.search(url, {
-                requestedBy: message.author.username,
-                searchEngine: QueryType.YOUTUBE_VIDEO
+            console.log(url)
+
+            client.distube.play(message.member.voice.channel, url, {
+                member: message.member,
+                textChannel: message.channel,
+                message
             })
-            if (result.tracks.length === 0) return message.channel.send('No results')
-            
-            const song = result.tracks[0]
-            await queue.addTrack(song)
-            embed
-                .setDescription(`**[${song.title}](${song.url})** has been added to the Queue`)
-                .setThumbnail(song.thumbnail)
-                .setFooter({ text: `Duration: ${song.duration}`})
 
         } else if (args[0].startsWith('https://www.youtube.com/playlist')) {
             let url = args[0]
-            const result = await client.player.search(url, {
-                requestedBy: message.author.username,
-                searchEngine: QueryType.YOUTUBE_PLAYLIST
+
+            client.distube.play(message.member.voice.channel, url, {
+                member: message.member,
+                textChannel: message.channel,
+                message
             })
-            if (result.tracks.length === 0) return message.channel.send('No results')
-            
-            const playlist = result.playlist
-            await queue.addTracks(result.tracks)
-            embed
-                .setDescription(`**${result.tracks.length} songs from [${playlist.title}](${playlist.url})** has been added to the Queue`)
-                .setThumbnail(playlist.thumbnail)
 
         } else if (args[0].startsWith('https://open.spotify.com/track/')) {
             let url = args[0]
@@ -61,77 +45,49 @@ module.exports = {
             .then(async (data) => {
 
                 let searchTerms = data.title + data.artist
-                const result = await client.player.search(searchTerms, {
-                    requestedBy:  message.author.username,
-                    searchEngine: QueryType.AUTO
+                client.distube.play(message.member.voice.channel, searchTerms, {
+                    member: message.member,
+                    textChannel: message.channel,
+                    message
                 })
-
-                if (result.tracks.length === 0) return message.channel.send('No results')
-    
-                const song = result.tracks[0]
-                await queue.addTrack(song)
-                embed
-                    .setDescription(`**[${song.title}](${song.url})** has been added to the Queue`)
-                    .setThumbnail(song.thumbnail)
-                    .setFooter({ text: `Duration: ${song.duration}`})
             })
 
         } else if (args[0].startsWith('https://open.spotify.com/playlist/')) {
             let url = args[0]
             await getTracks(url)
             .then(async (data) => {
-                embed
-                    .setDescription(`Spotify playlist has been added to the Queue`)
-                message.channel.send({
-                    embeds: [embed]
-                })
+                message.channel.send('Na spotify playlist si musis pockat :/')
 
-                for (const track of data) {
-                    const artist = JSON.parse(JSON.stringify(track.artists))[0]
+                // for (const track of data) {
+                //     const artist = await JSON.parse(JSON.stringify(track.artists))[0]
                     
-                    let searchTerms
-                    if (artist) {
-                        searchTerms = track.name + artist.name
-                    } else {
-                        searchTerms = track.name
-                    }
-                    const result = await client.player.search(searchTerms, {
-                        requestedBy:  message.author.username,
-                        searchEngine: QueryType.AUTO
-                    })
-
-                    if (result.tracks.length === 0) return message.channel.send('No results')
-                
-                    const song = result.tracks[0]
-                    await queue.addTrack(song)
-                }
-                
-                embed
-                    .setDescription(`Spotify playlist has been added to the Queue`)
+                //     let searchTerms
+                //     if (artist) {
+                //         searchTerms = track.name + artist.name
+                //     } else {
+                //         searchTerms = track.name
+                //     }
+                //     console.log(searchTerms)
+                //     console.log(track.name)
+                //     if (searchTerms.length !== 0) {
+                //     client.distube.play(message.member.voice.channel, searchTerms, {
+                //         member: message.member,
+                //         textChannel: message.channel,
+                //         message
+                //     })  
+                //     } 
+                // }
             })
 
         } else {
             let searchTerms = args.join(' ')
             console.log('search')
-            const result = await client.player.search(searchTerms, {
-                requestedBy:  message.author.username,
-                searchEngine: QueryType.AUTO
+
+            client.distube.play(message.member.voice.channel, searchTerms, {
+                member: message.member,
+                textChannel: message.channel,
+                message
             })
-            if (result.tracks.length === 0) return message.channel.send('No results')
-            
-            const song = result.tracks[0]
-            await queue.addTrack(song)
-            embed
-                .setDescription(`**[${song.title}](${song.url})** has been added to the Queue`)
-                .setThumbnail(song.thumbnail)
-                .setFooter({ text: `Duration: ${song.duration}`})
-
-            //playResponse(queue, message, embed)
         }
-
-        if (!queue.playing) await queue.play()
-        message.channel.send({
-            embeds: [embed]
-        })
     }
 }

@@ -1,12 +1,15 @@
 {
   "dependencies": {
-    "@discordjs/opus": "github:discordjs/opus",
-    "@discordjs/rest": "^0.5.0",
+    "@discordjs/opus": "^0.8.0",
+    "@discordjs/voice": "^0.11.0",
     "discord-player": "^5.2.2",
-    "discord.js": "^13.8.1",
+    "discord.js": "^14.3.0",
+    "distube": "^4.0.3",
     "dotenv": "^16.0.1",
     "isomorphic-unfetch": "^3.1.0",
-    "spotify-url-info": "^3.1.2"
+    "libsodium-wrappers": "^0.7.9",
+    "spotify-url-info": "^3.1.2",
+    "ytdl-core": "^4.11.0"
   },
   "name": "kikabotv2",
   "version": "1.0.0",

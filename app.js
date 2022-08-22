@@ -1,18 +1,50 @@
 const Discord = require('discord.js')
+const { Client, GatewayIntentBits, Partials, IntentsBitField, EmbedBuilder } = require('discord.js')
 const dotenv = require('dotenv')
 const fs = require('fs')
 const { Player } = require('discord-player')
+const { DisTube } = require('distube')
 
 dotenv.config()
 const TOKEN = process.env.TOKEN
 
-const client = new Discord.Client({ 
-    intents: [
-        Discord.Intents.FLAGS.GUILDS,
-        'GUILD_VOICE_STATES',
-        "GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES"
-    ] 
+const client = new Client({ intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.MessageContent,
+]});
+
+client.distube = new DisTube(client, {
+    leaveOnStop: false,
+    emitNewSongOnly: true,
+    emitAddSongWhenCreatingQueue: false,
+    emitAddListWhenCreatingQueue: false
 })
+
+// const myIntents = new IntentsBitField();
+// myIntents.add(
+//     IntentsBitField.Flags.GuildPresences, 
+//     IntentsBitField.Flags.GuildMembers, 
+//     IntentsBitField.Flags.Guilds, 
+//     IntentsBitField.Flags.GuildVoiceStates, 
+//     IntentsBitField.Flags.GuildMessages, 
+//     IntentsBitField.Flags.DirectMessages)
+
+// const otherIntents2 = new IntentsBitField(32509);
+
+// const client = new Client({ intents: otherIntents2 });
+
+
+// const client = new Discord.Client({ 
+//     intents: [
+//         //Discord.Intents.FLAGS.GUILDS,
+//         Discord.Intents.FLAGS.GUILDS,
+//         'GUILD_VOICE_STATES',
+//         "GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES"
+//     ] 
+// })
 
 client.slashcommands = new Discord.Collection()
 client.player = new Player(client, {
@@ -25,11 +57,12 @@ client.player = new Player(client, {
 const slashFiles = fs.readdirSync('./slash').filter(file => file.endsWith('.js'))
 for (const file of slashFiles) {
     const slashcmd = require(`./slash/${file}`)
-    client.slashcommands.set(slashcmd.data.name, slashcmd)
+    client.slashcommands.set(slashcmd.name, slashcmd)
 }
 
 client.on('ready', () => {
     console.log(`Ready. Logged in as ${client.user.tag}`)
+    //console.log(client.slashcommands)
 })
 
 client.on('messageCreate', (message) => {
@@ -38,6 +71,7 @@ client.on('messageCreate', (message) => {
 
     const args = message.content.slice(prefix.length).split(/ +/)
     const command = args.shift().toLowerCase()
+   
     if (command === 'p' || command === 'play') {
         client.slashcommands.get('play').execute(client, message, args)
     } else if (command === 'queue') {
@@ -52,7 +86,52 @@ client.on('messageCreate', (message) => {
         client.slashcommands.get('resume').execute(client, message)
     } else if (command === 'skip') {
         client.slashcommands.get('skip').execute(client, message)
+    }  else if (command === 'clear') {
+        client.slashcommands.get('clear').execute(client, message)
     }
 })
+
+client.distube
+  .on('playSong', (queue, song) => {
+    let embed = new EmbedBuilder()
+    embed
+        .setDescription(`**[${song.name}](${song.url})** is now playing`)
+        .setThumbnail(song.thumbnail)
+        .setFooter({ text: `Duration: ${song.duration}`})
+    queue.textChannel.send({
+        embeds: [embed]
+    })
+  })
+
+client.distube
+  .on('addSong', (queue, song) => {
+    let embed = new EmbedBuilder()
+    embed
+        .setDescription(`**[${song.name}](${song.url})** has been added to the queue`)
+        .setThumbnail(song.thumbnail)
+        .setFooter({ text: `Duration: ${song.formattedDuration}`})
+    queue.textChannel.send({
+        embeds: [embed]
+    })
+  })
+
+client.distube
+  .on('addList', (queue, playlist) => {
+    let embed = new EmbedBuilder()
+    console.log(playlist)
+    embed
+        .setDescription(`**[${playlist.name}](${playlist.url})** has been added to the queue`)
+        .setThumbnail(playlist.thumbnail)
+        .setFooter({ text: `Youtube playlist`})
+    queue.textChannel.send({
+        embeds: [embed]
+    })
+  })
+
+client.distube
+  .on('searchNoResult', (message, query) =>
+  message.channel.send(`No result found for \`${query}\`!`)
+)
+
 
 client.login(TOKEN)

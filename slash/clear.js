@@ -1,14 +1,15 @@
+const { description } = require("./play")
+
 module.exports = { 
-    name: 'shuffle',
-    description: 'Shuffles the queue',
-    
+    name: 'clear',
+    description: 'removes queue',
     async execute(client, message) {
         const queue = client.player.getQueue(message.guildId)
-
+        
         if (!queue) return message.channel.send('There are no songs in the queue')
         
-        queue.shuffle()
-        message.channel.send(`The queue of ${queue.tracks.length} songs have been shuffled!`)
+        queue.delete()
+        message.channel.send(`Queue has been deleted`)
         
     }
 }

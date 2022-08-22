@@ -1,11 +1,9 @@
-const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 
 
 module.exports = { 
-    data: new SlashCommandBuilder()
-        .setName('info')
-        .setDescription('Displays info about the currently played song'),
+    name: 'info',
+    description: 'Displays info about the currently played song',
     
     async execute(client, message) {
         const queue = client.player.getQueue(message.guildId)

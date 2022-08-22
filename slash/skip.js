@@ -1,24 +1,18 @@
-const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 module.exports = { 
-    data: new SlashCommandBuilder()
-        .setName('skip')
-        .setDescription('Skips the current song'),
+    name: 'skip',
+    description: 'Skips the current song',
     
     async execute(client, message) {
-        const queue = client.player.getQueue(message.guildId)
+        const queue = client.distube.getQueue(message)
+        if (!queue) return message.channel.send(`${client.emotes.error} | There is nothing in the queue right now!`)
 
-        if (!queue) return message.channel.send('There are no songs in the queue')
-
-        const currentSong = queue.current
-
-        queue.skip()
-        message.channel.send({
-            embeds: [
-                new MessageEmbed().setDescription(`${currentSong.title} has been skipped!`)
-                .setThumbnail(currentSong.thumbnail)
-            ]
-        })
+        try {
+            const song = await queue.skip()
+            message.channel.send(`Skipped! Now playing:\n${song.name}`)
+        } catch (e) {
+            message.channel.send(`${e}`)
+        }
         
     }
 }

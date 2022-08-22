@@ -1,15 +1,14 @@
-const { SlashCommandBuilder } = require('@discordjs/builders')
 module.exports = { 
-    data: new SlashCommandBuilder()
-        .setName('resume')
-        .setDescription('Resume currently playing song'),
+    name: 'resume',
+    description: 'Resume currently playing song',
     
     async execute(client, message) {
-        const queue = client.player.getQueue(message.guildId)
+        const queue = client.queue.get(message.guild.id)
 
         if (!queue) return message.channel.send('There are no songs in the queue')
         
-        queue.setPaused(false)
+        const dispatcher = queue.dispatcher
+        dispatcher.resume()
         message.channel.send(`Resuming the song`)
         
     }
