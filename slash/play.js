@@ -1,8 +1,5 @@
 //const { SlashCommandBuilder } = require('@discordjs/builders')
 const { EmbedBuilder } = require('discord.js')
-const { QueryType } = require('discord-player')
-
-const ytdl = require('ytdl-core')
 
 const fetch = require('isomorphic-unfetch')
 const { getData, getPreview, getTracks, getDetails } = require('spotify-url-info')(fetch)

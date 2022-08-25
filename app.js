@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 const { Client, GatewayIntentBits, Partials, IntentsBitField, EmbedBuilder } = require('discord.js')
 const dotenv = require('dotenv')
 const fs = require('fs')
-const { Player } = require('discord-player')
+
 const { DisTube } = require('distube')
 
 dotenv.config()
@@ -23,36 +23,7 @@ client.distube = new DisTube(client, {
     emitAddListWhenCreatingQueue: false
 })
 
-// const myIntents = new IntentsBitField();
-// myIntents.add(
-//     IntentsBitField.Flags.GuildPresences, 
-//     IntentsBitField.Flags.GuildMembers, 
-//     IntentsBitField.Flags.Guilds, 
-//     IntentsBitField.Flags.GuildVoiceStates, 
-//     IntentsBitField.Flags.GuildMessages, 
-//     IntentsBitField.Flags.DirectMessages)
-
-// const otherIntents2 = new IntentsBitField(32509);
-
-// const client = new Client({ intents: otherIntents2 });
-
-
-// const client = new Discord.Client({ 
-//     intents: [
-//         //Discord.Intents.FLAGS.GUILDS,
-//         Discord.Intents.FLAGS.GUILDS,
-//         'GUILD_VOICE_STATES',
-//         "GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES"
-//     ] 
-// })
-
 client.slashcommands = new Discord.Collection()
-client.player = new Player(client, {
-    ytdloptions: {
-        quality: 'highestaudio',
-        highWaterMark: 1 << 25
-    }
-})
 
 const slashFiles = fs.readdirSync('./slash').filter(file => file.endsWith('.js'))
 for (const file of slashFiles) {
