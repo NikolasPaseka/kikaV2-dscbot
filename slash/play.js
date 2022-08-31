@@ -1,10 +1,8 @@
 //const { SlashCommandBuilder } = require('@discordjs/builders')
-const { EmbedBuilder } = require('discord.js')
-
 const fetch = require('isomorphic-unfetch')
 const { getData, getPreview, getTracks, getDetails } = require('spotify-url-info')(fetch)
 
-const { generateDependencyReport } = require('@discordjs/voice');
+const { generateDependencyReport } = require('@discordjs/voice')
 
 console.log(generateDependencyReport());
 

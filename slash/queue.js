@@ -1,10 +1,6 @@
 const { EmbedBuilder } = require('discord.js')
 
 module.exports = { 
-    // data: new SlashCommandBuilder()
-    //     .setName('queue')
-    //     .setDescription('Displays the current song queue')
-    //     .addNumberOption((option) => option.setName('page').setDescription('Page number of the queue').setMinValue(1)),
     name: 'queue',
     
     async execute(client, message, args) {

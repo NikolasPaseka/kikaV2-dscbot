@@ -68,7 +68,7 @@ client.distube
     embed
         .setDescription(`**[${song.name}](${song.url})** is now playing`)
         .setThumbnail(song.thumbnail)
-        .setFooter({ text: `Duration: ${song.duration}`})
+        .setFooter({ text: `Duration: ${song.formattedDuration}`})
     queue.textChannel.send({
         embeds: [embed]
     })
