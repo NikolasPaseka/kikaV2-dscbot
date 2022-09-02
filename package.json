@@ -5,6 +5,7 @@
     "discord.js": "^14.3.0",
     "distube": "^4.0.3",
     "dotenv": "^16.0.1",
+    "ffmpeg-static": "^4.4.1",
     "isomorphic-unfetch": "^3.1.0",
     "libsodium-wrappers": "^0.7.9",
     "spotify-url-info": "^3.1.2"
