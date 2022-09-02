@@ -15,17 +15,7 @@ module.exports = {
             return message.channel.send('You need to be in voice channel in order to play song')
         }
 
-        if (args[0].startsWith('https://www.youtube.com/watch')) {
-            let url = args[0]
-            console.log(url)
-
-            client.distube.play(message.member.voice.channel, url, {
-                member: message.member,
-                textChannel: message.channel,
-                message
-            })
-
-        } else if (args[0].startsWith('https://www.youtube.com/playlist')) {
+        if (args[0].startsWith('https://www.youtube.com/')) {
             let url = args[0]
 
             client.distube.play(message.member.voice.channel, url, {
@@ -36,9 +26,8 @@ module.exports = {
 
         } else if (args[0].startsWith('https://open.spotify.com/track/')) {
             let url = args[0]
-            await getPreview(url)
+            getPreview(url)
             .then(async (data) => {
-
                 let searchTerms = data.title + data.artist
                 client.distube.play(message.member.voice.channel, searchTerms, {
                     member: message.member,

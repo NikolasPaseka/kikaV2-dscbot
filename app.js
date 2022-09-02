@@ -7,6 +7,7 @@ const { DisTube } = require('distube')
 
 dotenv.config()
 const TOKEN = process.env.TOKEN
+const SECRET = process.env.SECRET
 
 const client = new Client({ intents: [
     GatewayIntentBits.Guilds,
