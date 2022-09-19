@@ -60,6 +60,8 @@ client.on('messageCreate', (message) => {
         client.slashcommands.get('skip').execute(client, message)
     }  else if (command === 'clear') {
         client.slashcommands.get('clear').execute(client, message)
+    } else if (command === 'stop') {
+        client.slashcommands.get('stop').execute(client, message)
     }
 })
 
