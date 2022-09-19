@@ -4,7 +4,7 @@ module.exports = {
     async execute(client, message) {
         const queue = client.distube.getQueue(message)
 
-        if (!queue) return message.channel.send('There are no songs in the queue')
+        if (!queue.playing) return message.channel.send('No song is playing ty tupaku')
         
         queue.pause()
         message.channel.send(`Song has been paused`)
