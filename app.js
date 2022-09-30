@@ -62,6 +62,10 @@ client.on('messageCreate', (message) => {
         client.slashcommands.get('clear').execute(client, message)
     } else if (command === 'stop') {
         client.slashcommands.get('stop').execute(client, message)
+    } else if (command === 'loop') {
+        client.slashcommands.get('loop').execute(client, message)
+    } else if (command === 'unloop') {
+        client.slashcommands.get('unloop').execute(client, message)
     }
 })
 

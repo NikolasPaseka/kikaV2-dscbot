@@ -5,7 +5,7 @@ module.exports = {
     
     async execute(client, message, args) {
         const queue = client.distube.getQueue(message)
-        if (!queue || queue.songs.length === 0) return message.channel.send(`${client.emotes.error} | There is nothing playing!`)
+        if (!queue || queue.songs.length === 0) return message.channel.send(`There is nothing playing!`)
 
         const q = queue.songs
         .map((song, i) => `${i === 0 ? 'Playing:' : `${i}.`} ${song.name} - \`${song.formattedDuration}\``)
